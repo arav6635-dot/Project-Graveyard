@@ -1,3 +1,11 @@
-a.py
 .env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+a.py
 b.py
