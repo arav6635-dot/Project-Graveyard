@@ -18,13 +18,17 @@ This app runs in **Gemini-only AI mode**.
   - `POST /api/projects/<id>/analyze`
   - `GET /api/analytics/overview`
 
+## Database
+- Runtime database is **Neon/Postgres only**.
+- Set `DATABASE_URL` in local `.env` and in Vercel environment variables.
+
 ## Run
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# Add your real key in .env or export it in your shell
+# Add GEMINI_API_KEY and DATABASE_URL in .env
 python app.py
 ```
 

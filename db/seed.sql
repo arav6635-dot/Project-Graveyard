@@ -1,6 +1,6 @@
 -- Project Graveyard seed data (DB-native, no hardcoded Python sample objects)
 
-INSERT OR IGNORE INTO projects(
+INSERT INTO projects(
   title, summary, category, status,
   idea_origin, problem_target, target_audience,
   stack, team_size, duration_months, budget_range,
@@ -26,7 +26,7 @@ INSERT OR IGNORE INTO projects(
   7,
   3,
   4,
-  datetime('now')
+  NOW()::text
 ),
 (
   'Indie API Marketplace',
@@ -47,41 +47,48 @@ INSERT OR IGNORE INTO projects(
   6,
   4,
   6,
-  datetime('now')
-);
+  NOW()::text
+)
+ON CONFLICT (id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'No Market Need'
-WHERE p.title = 'Async Journal AI';
+WHERE p.title = 'Async Journal AI'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'Poor Distribution'
-WHERE p.title = 'Async Journal AI';
+WHERE p.title = 'Async Journal AI'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'Lost Motivation'
-WHERE p.title = 'Async Journal AI';
+WHERE p.title = 'Async Journal AI'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'Scope Creep'
-WHERE p.title = 'Indie API Marketplace';
+WHERE p.title = 'Indie API Marketplace'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'No Monetization Path'
-WHERE p.title = 'Indie API Marketplace';
+WHERE p.title = 'Indie API Marketplace'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
 
-INSERT OR IGNORE INTO project_cause_votes(project_id, cause_id, votes, source)
+INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
 SELECT p.id, c.id, 1, 'seed'
 FROM projects p
 JOIN failure_causes c ON c.name = 'Technical Complexity'
-WHERE p.title = 'Indie API Marketplace';
+WHERE p.title = 'Indie API Marketplace'
+ON CONFLICT(project_id, cause_id) DO NOTHING;
