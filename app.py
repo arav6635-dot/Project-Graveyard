@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sqlite3
 import hashlib
+import shutil
 from datetime import datetime
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 from flask import Flask, jsonify, render_template, request
@@ -13,8 +16,12 @@ from flask import Flask, jsonify, render_template, request
 from analyzer import analyze_portfolio, analyze_project
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "graveyard.db"
+LOCAL_DB_PATH = BASE_DIR / "graveyard.db"
+IS_VERCEL = bool(os.getenv("VERCEL"))
+DB_PATH = Path("/tmp/graveyard.db") if IS_VERCEL else LOCAL_DB_PATH
 SEED_SQL_PATH = BASE_DIR / "db" / "seed.sql"
+_DB_BOOTSTRAP_LOCK = Lock()
+_DB_BOOTSTRAPPED = False
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -55,6 +62,24 @@ def db() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def bootstrap_runtime_db() -> None:
+    global _DB_BOOTSTRAPPED
+    if _DB_BOOTSTRAPPED:
+        return
+
+    with _DB_BOOTSTRAP_LOCK:
+        if _DB_BOOTSTRAPPED:
+            return
+
+        # Vercel functions can only write under /tmp.
+        # On cold start, copy bundled db to /tmp so write endpoints don't fail.
+        if IS_VERCEL and not DB_PATH.exists() and LOCAL_DB_PATH.exists():
+            shutil.copy2(LOCAL_DB_PATH, DB_PATH)
+
+        init_db()
+        _DB_BOOTSTRAPPED = True
 
 
 def ensure_default_causes(conn: sqlite3.Connection) -> None:
@@ -443,6 +468,11 @@ def index() -> str:
     return render_template("index.html")
 
 
+@app.before_request
+def ensure_db_ready() -> None:
+    bootstrap_runtime_db()
+
+
 @app.get("/api/causes")
 def list_causes():
     conn = db()
@@ -699,5 +729,5 @@ def analytics_overview():
 
 
 if __name__ == "__main__":
-    init_db()
+    bootstrap_runtime_db()
     app.run(debug=True)
