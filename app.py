@@ -219,7 +219,6 @@ def init_db() -> None:
         """,
     )
     ensure_default_causes(conn)
-    ensure_id_defaults(conn)
     cleanup_cause_data(conn)
 
     existing = conn.execute("SELECT COUNT(*) AS c FROM projects").fetchone()["c"]
@@ -228,26 +227,6 @@ def init_db() -> None:
 
     conn.commit()
     conn.close()
-
-
-def ensure_id_defaults(conn: psycopg.Connection) -> None:
-    tables = [
-        "projects",
-        "failure_causes",
-        "project_cause_votes",
-        "project_tags",
-        "analysis_reports",
-        "ai_analytics_cache",
-    ]
-    for table in tables:
-        seq = f"{table}_id_seq"
-        conn.execute(f"CREATE SEQUENCE IF NOT EXISTS {seq}")
-        conn.execute(
-            f"ALTER TABLE {table} ALTER COLUMN id SET DEFAULT nextval('{seq}')"
-        )
-        conn.execute(
-            f"SELECT setval('{seq}', COALESCE((SELECT MAX(id) FROM {table}), 1), true)"
-        )
 
 
 def seed_projects_from_sql(conn: psycopg.Connection) -> None:
