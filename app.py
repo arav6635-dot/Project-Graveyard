@@ -11,7 +11,7 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from analyzer import analyze_portfolio, analyze_project
 
@@ -466,6 +466,11 @@ def normalize_ai_analytics(data: dict[str, Any], total_projects: int) -> dict[st
 @app.get("/")
 def index() -> str:
     return render_template("index.html")
+
+
+@app.get("/favicon.ico")
+def favicon():
+    return redirect(url_for("static", filename="favicon.svg"), code=302)
 
 
 @app.before_request
