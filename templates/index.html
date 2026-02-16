@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Graveyard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="aurora"></div>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loader-wrap">
+      <div class="loader-ring"></div>
+      <h3>The Graveyard Intelligence</h3>
+      <p id="loadingText">Collecting failed project records...</p>
+    </div>
+  </div>
+  <header class="topbar shell">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span>PROJECT GRAVEYARD</span>
+    </div>
+    <div class="pill">Public Dataset of Failed Experiments</div>
+  </header>
+
+  <main class="shell layout">
+    <section class="hero panel">
+
+      <h1>Where Side Projects Go To Be Understood</h1>
+      <p>
+        Submit dead projects, crowd-tag failure causes, and extract reusable patterns from all abandoned experiments.
+      </p>
+      <div class="hero-stats" id="heroStats"></div>
+    </section>
+
+    <section class="panel grid-two">
+      <div>
+        <h2>Submit Failed Project</h2>
+        <p class="form-note">Simple input only. Add the essentials and publish fast.</p>
+        <form id="projectForm" class="stacked">
+          <div class="field-row">
+            <label>Project Title
+              <input name="title" required placeholder="Ex: Async Journal AI" />
+            </label>
+            <label>Category
+              <select name="category" required>
+                <option>Developer Tools</option>
+                <option>Productivity</option>
+                <option>AI</option>
+                <option>Consumer App</option>
+                <option>Fintech</option>
+                <option>Health</option>
+                <option>Education</option>
+                <option>SaaS</option>
+              </select>
+            </label>
+            <label>Status
+              <select name="status" required>
+                <option>Abandoned</option>
+                <option>Archived</option>
+                <option>On Hold</option>
+              </select>
+            </label>
+          </div>
+
+          <label>One-line Summary
+            <textarea name="summary" required rows="2" placeholder="What was this project? Why did it exist?"></textarea>
+          </label>
+
+          <div class="field-row">
+            <label>Stack
+              <input name="stack" placeholder="FastAPI, Next.js, Supabase" />
+            </label>
+            <label>Duration (months)
+              <input type="number" min="0" max="120" name="duration_months" value="3" />
+            </label>
+          <label>Team Size
+            <input type="number" min="1" max="50" name="team_size" value="1" />
+          </label>
+        </div>
+
+          <label>What Happened
+            <textarea name="what_happened" rows="3" placeholder="What happened during execution?"></textarea>
+          </label>
+
+          <label>Why It Failed
+            <textarea name="why_failed" required rows="3" placeholder="Be specific. Market, distribution, team, motivation, etc."></textarea>
+          </label>
+
+          <label>Lessons Learned
+            <textarea name="lessons_learned" rows="3" placeholder="What would you do differently next time?"></textarea>
+          </label>
+
+          <label>Initial Failure Causes (comma-separated)
+            <input name="initial_causes" placeholder="No Market Need, Burnout, Scope Creep" />
+          </label>
+
+          <label>Tags (comma-separated)
+            <input name="tags" placeholder="b2c, open-source, student-project" />
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary">Publish to Graveyard</button>
+            <button type="button" id="refreshBtn" class="btn-ghost">Refresh Data</button>
+          </div>
+        </form>
+      </div>
+
+      <aside>
+        <h2>Failure Pattern Console</h2>
+        <div class="metric-grid" id="analyticsCards"></div>
+        <div class="panel dark" id="causesPanel"></div>
+        <div class="panel dark" id="categoryPanel"></div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <h2>Common Causes of Death</h2>
+        <p id="causeChartNote">Live crowd signal across all failed projects.</p>
+      </div>
+      <div id="commonCausesBars" class="bars"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <h2>Project Feed</h2>
+        <p>Detailed submissions with crowd tagging and AI autopsy.</p>
+      </div>
+      <div id="projectList" class="project-grid"></div>
+    </section>
+  </main>
+
+  <template id="projectCardTemplate">
+    <article class="project-card">
+      <header>
+        <h3 class="title"></h3>
+        <span class="status"></span>
+      </header>
+      <p class="summary"></p>
+      <div class="meta"></div>
+      <div class="chips causes"></div>
+      <div class="chips tags"></div>
+      <div class="details"></div>
+      <div class="ai"></div>
+      <div class="card-actions">
+        <input class="causeInput" placeholder="Add/Upvote cause" />
+        <button class="voteBtn">Vote Cause</button>
+        <input class="tagInput" placeholder="Add tag" />
+        <button class="tagBtn">Add Tag</button>
+        <button class="analyzeBtn">Run AI Autopsy</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
