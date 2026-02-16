@@ -138,7 +138,8 @@ def cleanup_cause_data(conn: psycopg.Connection) -> None:
                 """
                 INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
                 VALUES(%s, %s, %s, 'cleanup')
-                ON CONFLICT(project_id, cause_id) DO UPDATE SET votes = votes + excluded.votes
+                ON CONFLICT(project_id, cause_id)
+                DO UPDATE SET votes = project_cause_votes.votes + EXCLUDED.votes
                 """,
                 (vote["project_id"], new_id, vote["votes"]),
             )
@@ -614,7 +615,8 @@ def create_project():
             """
             INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
             VALUES(%s, %s, 1, 'owner')
-            ON CONFLICT(project_id, cause_id) DO UPDATE SET votes = votes + 1
+            ON CONFLICT(project_id, cause_id)
+            DO UPDATE SET votes = project_cause_votes.votes + 1
             """,
             (project_id, cause_id),
         )
@@ -652,7 +654,8 @@ def vote_cause(project_id: int):
         """
         INSERT INTO project_cause_votes(project_id, cause_id, votes, source)
         VALUES(%s, %s, %s, 'crowd')
-        ON CONFLICT(project_id, cause_id) DO UPDATE SET votes = votes + excluded.votes
+        ON CONFLICT(project_id, cause_id)
+        DO UPDATE SET votes = project_cause_votes.votes + EXCLUDED.votes
         """,
         (project_id, cause_id, votes),
     )
