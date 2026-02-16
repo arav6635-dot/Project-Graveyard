@@ -236,7 +236,34 @@ def seed_projects_from_sql(conn: psycopg.Connection) -> None:
 
 
 def run_sql_script(conn: psycopg.Connection, script: str) -> None:
-    statements = [s.strip() for s in script.split(";") if s.strip()]
+    statements: list[str] = []
+    buf: list[str] = []
+    in_single_quote = False
+    i = 0
+    length = len(script)
+
+    while i < length:
+        ch = script[i]
+        buf.append(ch)
+
+        if ch == "'":
+            # Handle escaped single quote in SQL string: ''
+            if in_single_quote and i + 1 < length and script[i + 1] == "'":
+                buf.append(script[i + 1])
+                i += 1
+            else:
+                in_single_quote = not in_single_quote
+        elif ch == ";" and not in_single_quote:
+            stmt = "".join(buf).strip().rstrip(";").strip()
+            if stmt:
+                statements.append(stmt)
+            buf = []
+        i += 1
+
+    tail = "".join(buf).strip()
+    if tail:
+        statements.append(tail)
+
     for statement in statements:
         conn.execute(statement)
 
